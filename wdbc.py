@@ -19,17 +19,29 @@ data = pd.read_csv("data.csv", header=None, names=columns)
 # Check for missing values
 print(f"Missing values in dataset:\n{data.isnull().sum()}")
 
-# Handle missing values:
-# Fill missing values with the mean (or median) for the columns that have missing values
+# Remove non-numeric characters (if any) in numeric columns
+def clean_column(col):
+    # Remove any non-numeric characters (e.g., 'radius_mean17.99' -> '17.99')
+    return col.replace(r'[^\d.]', '', regex=True)
+
+# Clean columns that should be numeric
+data["Mean Radius"] = data["Mean Radius"].apply(clean_column)
+data["Mean Perimeter"] = data["Mean Perimeter"].apply(clean_column)
+data["Mean Area"] = data["Mean Area"].apply(clean_column)
+data["Worst Radius"] = data["Worst Radius"].apply(clean_column)
+data["Worst Perimeter"] = data["Worst Perimeter"].apply(clean_column)
+data["Worst Area"] = data["Worst Area"].apply(clean_column)
+
+# Convert the columns to numeric
+data["Mean Radius"] = pd.to_numeric(data["Mean Radius"], errors="coerce")
 data["Mean Perimeter"] = pd.to_numeric(data["Mean Perimeter"], errors="coerce")
+data["Mean Area"] = pd.to_numeric(data["Mean Area"], errors="coerce")
 data["Worst Radius"] = pd.to_numeric(data["Worst Radius"], errors="coerce")
 data["Worst Perimeter"] = pd.to_numeric(data["Worst Perimeter"], errors="coerce")
+data["Worst Area"] = pd.to_numeric(data["Worst Area"], errors="coerce")
 
-# Filling missing data with the mean of each column
-data.fillna(data.mean(), inplace=True)
-
-# Alternatively, drop rows with missing values (if too many missing)
-# data = data.dropna()  # Uncomment this line if you prefer to drop rows with missing data
+# After cleaning, fill missing values with the mean or median
+data.fillna(data.mean(), inplace=True)  # You can replace 'data.mean()' with 'data.median()' if preferred
 
 # Map Diagnosis to numeric (1 for Malignant, 0 for Benign)
 data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})
@@ -42,7 +54,6 @@ sns.set_style("whitegrid")
 sns.set_context("notebook", font_scale=1.3)
 
 # Scatter Plot: Relationship Between Mean Perimeter and Mean Area
-# Plotting with hue="Diagnosis" to distinguish benign and malignant samples
 plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=data, 
