@@ -31,26 +31,20 @@ features = ["Mean Radius", "Mean Perimeter", "Mean Area", "Worst Radius", "Worst
 
 for feature in features:
     plt.figure(figsize=(10, 6))
-    sns.histplot(
-        data, 
-        x=feature, 
-        hue="Diagnosis", 
-        kde=True, 
-        bins=30, 
-        palette="coolwarm", 
-        alpha=0.7
-    )
-    plt.title(f"Distribution of {feature} by Diagnosis", fontsize=18)
-    plt.xlabel(feature, fontsize=14)
-    plt.ylabel("Frequency", fontsize=14)
-    plt.legend(
-        title="Diagnosis", 
-        labels=["Benign", "Malignant"], 
-        fontsize=12, 
-        loc="upper right"
-    )
-    plt.tight_layout()
-    plt.show()
+sns.scatterplot(
+    data=data, 
+    x="Mean Perimeter", 
+    y="Mean Area", 
+    hue="Diagnosis", 
+    palette="coolwarm", 
+    alpha=0.8
+)
+plt.title("Relationship Between Mean Perimeter and Mean Area by Diagnosis", fontsize=16)
+plt.xlabel("Mean Perimeter", fontsize=14)
+plt.ylabel("Mean Area", fontsize=14)
+plt.legend(title="Diagnosis", fontsize=12)
+plt.tight_layout()
+plt.show()
 
 
 # Define features for correlation
