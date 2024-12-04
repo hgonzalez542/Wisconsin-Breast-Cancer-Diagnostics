@@ -16,27 +16,30 @@ columns = [
 # Load dataset
 data = pd.read_csv("data.csv", header=None, names=columns)
 
-# Create the Diagnosis_Numeric column
+# Create the Diagnosis_Numeric column for logistic regression
 data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})
 
-# Display first few rows of the dataset
+# Display the first few rows of the dataset to ensure it's loaded correctly
 print(data.head())
 
 # Set global style and context for cleaner plots
 sns.set_style("whitegrid")
 sns.set_context("notebook", font_scale=1.3)
 
-# Scatter Plot: Relationship Between Mean Perimeter and Mean Area (with Diagnosis distinction)
+# Scatter Plot: Relationship Between Mean Perimeter and Mean Area
+# Ensure proper differentiation between Benign and Malignant with color hue
 plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=data, 
     x="Mean Perimeter", 
     y="Mean Area", 
-    hue="Diagnosis",  # Ensure it's colored by Diagnosis
-    palette="coolwarm",  # Color palette for the categories
+    hue="Diagnosis",  # This ensures different colors for Benign (B) vs Malignant (M)
+    palette="coolwarm",  # coolwarm gives distinct colors for categories
     alpha=0.7,  # Slight transparency for better visibility when points overlap
-    s=100  # Size of points
+    s=100  # Size of the points in the scatter plot
 )
+
+# Title and labels
 plt.title("Relationship Between Mean Perimeter and Mean Area by Diagnosis", fontsize=16)
 plt.xlabel("Mean Perimeter", fontsize=14)
 plt.ylabel("Mean Area", fontsize=14)
@@ -85,3 +88,4 @@ print("Confusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 print("Accuracy:", accuracy_score(y_test, y_pred))
+
