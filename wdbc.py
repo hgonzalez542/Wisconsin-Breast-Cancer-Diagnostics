@@ -26,15 +26,16 @@ print(data.head())
 sns.set_style("whitegrid")
 sns.set_context("notebook", font_scale=1.3)
 
-# Scatter Plot: Relationship Between Mean Perimeter and Mean Area
+# Scatter Plot: Relationship Between Mean Perimeter and Mean Area (with Diagnosis distinction)
 plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=data, 
     x="Mean Perimeter", 
     y="Mean Area", 
-    hue="Diagnosis", 
-    palette="coolwarm", 
-    alpha=0.8
+    hue="Diagnosis",  # Ensure it's colored by Diagnosis
+    palette="coolwarm",  # Color palette for the categories
+    alpha=0.7,  # Slight transparency for better visibility when points overlap
+    s=100  # Size of points
 )
 plt.title("Relationship Between Mean Perimeter and Mean Area by Diagnosis", fontsize=16)
 plt.xlabel("Mean Perimeter", fontsize=14)
