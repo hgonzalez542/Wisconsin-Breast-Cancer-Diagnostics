@@ -22,22 +22,52 @@ data = pd.read_csv("data.csv", header=None, names=columns)
 # Display first few rows of cleaned data
 print(data.head())
 
+# Set global style and context for cleaner plots
+sns.set_style("whitegrid")
+sns.set_context("notebook", font_scale=1.3)
+
 # Visualize the distribution of selected features by diagnosis
 features = ["Mean Radius", "Mean Perimeter", "Mean Area", "Worst Radius", "Worst Perimeter", "Worst Area"]
+
 for feature in features:
-    plt.figure(figsize=(8, 6))
-    sns.histplot(data, x=feature, hue="Diagnosis", kde=True, palette="Set2", bins=30)
-    plt.title(f"{feature} Distribution by Diagnosis")
-    plt.xlabel(feature)
-    plt.ylabel("Frequency")
+    plt.figure(figsize=(10, 6))
+    sns.histplot(
+        data, 
+        x=feature, 
+        hue="Diagnosis", 
+        kde=True, 
+        bins=30, 
+        palette="coolwarm", 
+        alpha=0.7
+    )
+    plt.title(f"Distribution of {feature} by Diagnosis", fontsize=18)
+    plt.xlabel(feature, fontsize=14)
+    plt.ylabel("Frequency", fontsize=14)
+    plt.legend(
+        title="Diagnosis", 
+        labels=["Benign", "Malignant"], 
+        fontsize=12, 
+        loc="upper right"
+    )
+    plt.tight_layout()
     plt.show()
 
-# Correlation heatmap for selected features and target variable
-selected_features = features + ["Diagnosis_Numeric"]
-plt.figure(figsize=(8, 6))
-sns.heatmap(data[selected_features].corr(), annot=True, cmap="coolwarm", fmt=".2f")
-plt.title("Correlation Heatmap")
+
+# Define features for correlation
+selected_features = ["Mean Radius", "Mean Perimeter", "Mean Area", "Worst Radius", "Worst Perimeter", "Worst Area", "Diagnosis_Numeric"]
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(
+    data[selected_features].corr(), 
+    annot=True, 
+    cmap="coolwarm", 
+    fmt=".2f", 
+    linewidths=0.5
+)
+plt.title("Correlation Heatmap of Selected Features", fontsize=18)
+plt.tight_layout()
 plt.show()
+
 
 # Select features and target variable
 X = data[["Worst Radius", "Worst Area", "Worst Texture"]]
@@ -62,16 +92,4 @@ print(confusion_matrix(y_test, y_pred))
 
 print("Accuracy:", accuracy_score(y_test, y_pred))
 
-# Coefficients of the logistic regression model
-coefficients = pd.DataFrame({
-    "Feature": ["Worst Radius", "Worst Area", "Worst Texture"],
-    "Coefficient": model.coef_[0]
-})
-print("Model Coefficients:")
-print(coefficients)
 
-# Visualize feature importance
-plt.figure(figsize=(8, 6))
-sns.barplot(data=coefficients, x="Coefficient", y="Feature", palette="coolwarm")
-plt.title("Feature Importance (Coefficients)")
-plt.show()
