@@ -1,4 +1,6 @@
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Define column names based on dataset description
 columns = [
@@ -20,3 +22,20 @@ data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})  # Encode ta
 
 # Display first few rows of cleaned data
 print(data.head())
+
+# Visualize the distribution of selected features by diagnosis
+features = ["Mean Radius", "Mean Perimeter", "Mean Area", "Worst Radius", "Worst Perimeter", "Worst Area"]
+for feature in features:
+    plt.figure(figsize=(8, 6))
+    sns.histplot(data, x=feature, hue="Diagnosis", kde=True, palette="Set2", bins=30)
+    plt.title(f"{feature} Distribution by Diagnosis")
+    plt.xlabel(feature)
+    plt.ylabel("Frequency")
+    plt.show()
+
+# Correlation heatmap for selected features and target variable
+selected_features = features + ["Diagnosis_Numeric"]
+plt.figure(figsize=(8, 6))
+sns.heatmap(data[selected_features].corr(), annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.show()
