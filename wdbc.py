@@ -12,7 +12,7 @@ columns = [
 ]
 
 # Load dataset
-data = pd.read_csv("wdbc.data", header=None, names=columns)
+data = pd.read_csv("data.csv", header=None, names=columns)
 
 # Clean the dataset
 data.drop(columns=["ID"], inplace=True)  # Remove ID column
