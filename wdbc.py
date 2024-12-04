@@ -7,19 +7,32 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 
 # Define column names based on dataset description
 columns = [
-    "Diagnosis",
+    "Diagnosis", 
     "Mean Radius", "Mean Perimeter", "Mean Area", 
     "Radius SE", "Perimeter SE", "Area SE", 
-    "Worst Radius", "Worst Perimeter", "Worst Area",
+    "Worst Radius", "Worst Perimeter", "Worst Area"
 ]
 
 # Load dataset
 data = pd.read_csv("data.csv", header=None, names=columns)
 
-# Create the Diagnosis_Numeric column for logistic regression
+# Check for missing values and ensure valid diagnosis categories
+print(f"Missing values in dataset:\n{data.isnull().sum()}")
+print(f"Unique values in 'Diagnosis': {data['Diagnosis'].unique()}")
+
+# Strip any leading/trailing spaces from 'Diagnosis' column and map it to numeric
+data['Diagnosis'] = data['Diagnosis'].str.strip()
 data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})
 
-# Display the first few rows of the dataset to ensure it's loaded correctly
+# Convert the relevant columns to numeric, forcing errors to NaN, then drop rows with NaN values
+data["Mean Radius"] = pd.to_numeric(data["Mean Radius"], errors="coerce")
+data["Mean Perimeter"] = pd.to_numeric(data["Mean Perimeter"], errors="coerce")
+data["Mean Area"] = pd.to_numeric(data["Mean Area"], errors="coerce")
+
+# Drop rows with any NaN values in the critical columns
+data = data.dropna(subset=["Mean Radius", "Mean Perimeter", "Mean Area"])
+
+# Display first few rows of the dataset to ensure it's correct
 print(data.head())
 
 # Set global style and context for cleaner plots
@@ -27,19 +40,17 @@ sns.set_style("whitegrid")
 sns.set_context("notebook", font_scale=1.3)
 
 # Scatter Plot: Relationship Between Mean Perimeter and Mean Area
-# Ensure proper differentiation between Benign and Malignant with color hue
+# Plotting with hue="Diagnosis" to distinguish benign and malignant samples
 plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=data, 
     x="Mean Perimeter", 
     y="Mean Area", 
-    hue="Diagnosis",  # This ensures different colors for Benign (B) vs Malignant (M)
+    hue="Diagnosis",  # This will color the dots based on diagnosis (Malignant vs Benign)
     palette="coolwarm",  # coolwarm gives distinct colors for categories
     alpha=0.7,  # Slight transparency for better visibility when points overlap
     s=100  # Size of the points in the scatter plot
 )
-
-# Title and labels
 plt.title("Relationship Between Mean Perimeter and Mean Area by Diagnosis", fontsize=16)
 plt.xlabel("Mean Perimeter", fontsize=14)
 plt.ylabel("Mean Area", fontsize=14)
@@ -66,7 +77,8 @@ plt.title("Correlation Heatmap of Selected Features", fontsize=18)
 plt.tight_layout()
 plt.show()  # Ensure only one show() call for the heatmap
 
-# Select features for Logistic Regression model
+# Logistic Regression Model (Optional)
+# Select features for model
 X = data[["Worst Radius", "Worst Area", "Worst Perimeter"]]
 y = data["Diagnosis_Numeric"]
 
