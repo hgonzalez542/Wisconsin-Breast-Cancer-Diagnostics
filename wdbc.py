@@ -61,3 +61,17 @@ print("Confusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# Coefficients of the logistic regression model
+coefficients = pd.DataFrame({
+    "Feature": ["Worst Radius", "Worst Area", "Worst Texture"],
+    "Coefficient": model.coef_[0]
+})
+print("Model Coefficients:")
+print(coefficients)
+
+# Visualize feature importance
+plt.figure(figsize=(8, 6))
+sns.barplot(data=coefficients, x="Coefficient", y="Feature", palette="coolwarm")
+plt.title("Feature Importance (Coefficients)")
+plt.show()
