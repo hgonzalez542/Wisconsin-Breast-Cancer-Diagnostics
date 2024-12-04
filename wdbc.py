@@ -1,25 +1,23 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 # Define column names based on dataset description
 columns = [
-    "ID", "Diagnosis",
-    "Mean Radius", "Mean Texture", "Mean Perimeter", "Mean Area", "Mean Smoothness",
-    "Mean Compactness", "Mean Concavity", "Mean Concave Points", "Mean Symmetry", "Mean Fractal Dimension",
-    "Radius SE", "Texture SE", "Perimeter SE", "Area SE", "Smoothness SE",
-    "Compactness SE", "Concavity SE", "Concave Points SE", "Symmetry SE", "Fractal Dimension SE",
-    "Worst Radius", "Worst Texture", "Worst Perimeter", "Worst Area", "Worst Smoothness",
-    "Worst Compactness", "Worst Concavity", "Worst Concave Points", "Worst Symmetry", "Worst Fractal Dimension"
+    "Diagnosis",
+    "Mean Radius", "Mean Perimeter", "Mean Area", 
+    "Radius SE", "Perimeter SE", "Area SE", 
+    "Worst Radius", "Worst Perimeter", "Worst Area",
+    
 ]
 
 # Load dataset
 data = pd.read_csv("data.csv", header=None, names=columns)
 
-# Clean the dataset
-data.drop(columns=["ID"], inplace=True)  # Remove ID column
-data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})  # Encode target as numeric
+
 
 # Display first few rows of cleaned data
 print(data.head())
@@ -40,3 +38,26 @@ plt.figure(figsize=(8, 6))
 sns.heatmap(data[selected_features].corr(), annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Correlation Heatmap")
 plt.show()
+
+# Select features and target variable
+X = data[["Worst Radius", "Worst Area", "Worst Texture"]]
+y = data["Diagnosis_Numeric"]
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train logistic regression model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate model performance
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
