@@ -16,23 +16,25 @@ columns = [
 # Load dataset
 data = pd.read_csv("data.csv", header=None, names=columns)
 
-# Check for missing values and ensure valid diagnosis categories
+# Check for missing values
 print(f"Missing values in dataset:\n{data.isnull().sum()}")
-print(f"Unique values in 'Diagnosis': {data['Diagnosis'].unique()}")
 
-# Strip any leading/trailing spaces from 'Diagnosis' column and map it to numeric
-data['Diagnosis'] = data['Diagnosis'].str.strip()
+# Handle missing values:
+# Fill missing values with the mean (or median) for the columns that have missing values
+data["Mean Perimeter"] = pd.to_numeric(data["Mean Perimeter"], errors="coerce")
+data["Worst Radius"] = pd.to_numeric(data["Worst Radius"], errors="coerce")
+data["Worst Perimeter"] = pd.to_numeric(data["Worst Perimeter"], errors="coerce")
+
+# Filling missing data with the mean of each column
+data.fillna(data.mean(), inplace=True)
+
+# Alternatively, drop rows with missing values (if too many missing)
+# data = data.dropna()  # Uncomment this line if you prefer to drop rows with missing data
+
+# Map Diagnosis to numeric (1 for Malignant, 0 for Benign)
 data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})
 
-# Convert the relevant columns to numeric, forcing errors to NaN, then drop rows with NaN values
-data["Mean Radius"] = pd.to_numeric(data["Mean Radius"], errors="coerce")
-data["Mean Perimeter"] = pd.to_numeric(data["Mean Perimeter"], errors="coerce")
-data["Mean Area"] = pd.to_numeric(data["Mean Area"], errors="coerce")
-
-# Drop rows with any NaN values in the critical columns
-data = data.dropna(subset=["Mean Radius", "Mean Perimeter", "Mean Area"])
-
-# Display first few rows of the dataset to ensure it's correct
+# Display the first few rows of the dataset to ensure it's correct
 print(data.head())
 
 # Set global style and context for cleaner plots
@@ -100,4 +102,3 @@ print("Confusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 print("Accuracy:", accuracy_score(y_test, y_pred))
-
