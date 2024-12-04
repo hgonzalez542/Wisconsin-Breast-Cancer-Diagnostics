@@ -11,26 +11,23 @@ columns = [
     "Mean Radius", "Mean Perimeter", "Mean Area", 
     "Radius SE", "Perimeter SE", "Area SE", 
     "Worst Radius", "Worst Perimeter", "Worst Area",
-    
 ]
 
 # Load dataset
 data = pd.read_csv("data.csv", header=None, names=columns)
 
+# Create the Diagnosis_Numeric column
+data["Diagnosis_Numeric"] = data["Diagnosis"].map({"M": 1, "B": 0})
 
-
-# Display first few rows of cleaned data
+# Display first few rows of the dataset
 print(data.head())
 
 # Set global style and context for cleaner plots
 sns.set_style("whitegrid")
 sns.set_context("notebook", font_scale=1.3)
 
-# Visualize the distribution of selected features by diagnosis
-features = ["Mean Radius", "Mean Perimeter", "Mean Area", "Worst Radius", "Worst Perimeter", "Worst Area"]
-
-for feature in features:
-    plt.figure(figsize=(10, 6))
+# Scatter Plot: Relationship Between Mean Perimeter and Mean Area
+plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=data, 
     x="Mean Perimeter", 
@@ -44,11 +41,14 @@ plt.xlabel("Mean Perimeter", fontsize=14)
 plt.ylabel("Mean Area", fontsize=14)
 plt.legend(title="Diagnosis", fontsize=12)
 plt.tight_layout()
-plt.show()
+plt.show()  # Ensure only one show() call for scatter plot
 
-
-# Define features for correlation
-selected_features = ["Mean Radius", "Mean Perimeter", "Mean Area", "Worst Radius", "Worst Perimeter", "Worst Area", "Diagnosis_Numeric"]
+# Correlation Heatmap for Selected Features
+selected_features = [
+    "Mean Radius", "Mean Perimeter", "Mean Area", 
+    "Worst Radius", "Worst Perimeter", "Worst Area", 
+    "Diagnosis_Numeric"
+]
 
 plt.figure(figsize=(10, 8))
 sns.heatmap(
@@ -60,11 +60,10 @@ sns.heatmap(
 )
 plt.title("Correlation Heatmap of Selected Features", fontsize=18)
 plt.tight_layout()
-plt.show()
+plt.show()  # Ensure only one show() call for the heatmap
 
-
-# Select features and target variable
-X = data[["Worst Radius", "Worst Area", "Worst Texture"]]
+# Select features for Logistic Regression model
+X = data[["Worst Radius", "Worst Area", "Worst Perimeter"]]
 y = data["Diagnosis_Numeric"]
 
 # Split data into training and testing sets
@@ -85,5 +84,3 @@ print("Confusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 print("Accuracy:", accuracy_score(y_test, y_pred))
-
-
